@@ -8,12 +8,18 @@ import tourRoute from './Routes/tours.js';
 
 import userRoute from './Routes/user.js';
 
-import authRoute from './Routes/auth.js'
+import authRoute from './Routes/auth.js';
+
+import reviewRoute from './Routes/reviews.js'
 
 
 dotenv.config()
 const app = express()
 const port = process.env.PORT || 8000
+const corsOptions = {
+    origin:true,
+    credentials:true
+}
 
 //database connection
 const connect = async () => {
@@ -37,12 +43,13 @@ const connect = async () => {
 
 //middleware
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use('/tours',tourRoute);
-app.use('/user',userRoute);
-app.use('/auth',authRoute);
+app.use('/api/v1/tours',tourRoute);
+app.use('/api/v1/user',userRoute);
+app.use('/api/v1/auth',authRoute);
+app.use('/api/v1/review',reviewRoute)
 
 
 

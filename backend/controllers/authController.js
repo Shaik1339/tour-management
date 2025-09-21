@@ -8,10 +8,13 @@ export const register = async (req,res) => {
 
     try{
 
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(req.body.password,salt)
+
         const newUser = new User({
             username:req.body.username,
             email:req.body.email,
-            password:req.body.password,
+            password:hash,
             photo:req.body.photo
 
         })
@@ -28,9 +31,38 @@ export const register = async (req,res) => {
 
 export const login = async (req,res) => {
 
+    const email=req.body.email;
+
     try{
+        const user=await User.findOne({email});
+
+        //if user not exist
+        if(!user){
+           return res.status(404).json({success:false, message:'User not found'});
+        }
+        //if user exist then compare passowrd
+        const checkCorrectPassword = await bcrypt.compare(req.body.password,user.password);
+
+        //if password is incorrect
+        if(!checkCorrectPassword){
+           return res.status(401).json({success:false,message:'incorrect email or password'})
+        }
+
+        //if passowrd also coreect
+        const {password,role,...rest} = user._doc;
+
+        //create jwt token
+        const token = jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:'15d'});
+
+        //set token in cookies browser and send response to client
+        res.cookie('accessToken' , token , {
+            httpOnly:true,
+            expires:token.expiresIn
+        }).status(200).json({success:true, message:'successfully login', data:{token,...rest,role}});
 
     }catch(err){
+
+        res.status(500).json({success:false,message:'falied to login user'});
         
     }
 }
