@@ -6,6 +6,10 @@ import cookieParser from 'cookie-parser';
 
 import tourRoute from './Routes/tours.js';
 
+import userRoute from './Routes/user.js';
+
+import authRoute from './Routes/auth.js'
+
 
 dotenv.config()
 const app = express()
@@ -37,6 +41,9 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/tours',tourRoute);
+app.use('/user',userRoute);
+app.use('/auth',authRoute);
+
 
 
 
