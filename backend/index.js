@@ -12,6 +12,8 @@ import authRoute from './Routes/auth.js';
 
 import reviewRoute from './Routes/reviews.js'
 
+import bookingRoute from './Routes/booking.js'
+
 
 dotenv.config()
 const app = express()
@@ -49,7 +51,8 @@ app.use(cookieParser());
 app.use('/api/v1/tours',tourRoute);
 app.use('/api/v1/user',userRoute);
 app.use('/api/v1/auth',authRoute);
-app.use('/api/v1/review',reviewRoute)
+app.use('/api/v1/review',reviewRoute);
+app.use('/api/v1',bookingRoute)
 
 
 
