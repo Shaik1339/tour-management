@@ -10,6 +10,7 @@ export const register = async (req,res) => {
 
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password,salt)
+        console.log(req.body)
 
         const newUser = new User({
             username:req.body.username,
@@ -24,6 +25,7 @@ export const register = async (req,res) => {
 
     }catch(err){
         res.status(500).json({success:false,message:'falied to create user'});
+        console.log(err)
 
     }
 }
@@ -55,10 +57,17 @@ export const login = async (req,res) => {
         const token = jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:'15d'});
 
         //set token in cookies browser and send response to client
-        res.cookie('accessToken' , token , {
-            httpOnly:true,
-            expires:token.expiresIn
-        }).status(200).json({success:true, message:'successfully login', data:{token,...rest,role}});
+
+         // Set cookie
+         res.cookie('token', token, {
+            httpOnly: true,      // prevents client-side JS access
+            secure: true,        // ensures cookie is sent over HTTPS
+            sameSite: 'Strict',  // prevents CSRF
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
+          });
+            res.status(200).json({success:true, message:'successfully login', data:{token,...rest,role}});
+
+
 
     }catch(err){
 

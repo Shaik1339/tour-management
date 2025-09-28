@@ -1,28 +1,51 @@
-import React,{useState} from 'react'
+import React,{useState,useContext} from 'react'
 import '../styles/login.css'
 import { Container,Row,Col,Form,FormGroup,Button } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import registerImg from '../assets/images/register.png'
 import userIcon from '../assets/images/user.png'
+import { AuthContext } from '../context/AuthContext'
+import axios from 'axios'
+import { BASE_URL } from '../utils/config'
+import { useNavigate } from 'react-router-dom'
+
 
 const Register = () => {
 
    const [credentials, setCredentials] = useState({
-         userName:undefined,
+         username:undefined,
          email:undefined,
          password:undefined
   
       })
+
+      const navigate = useNavigate()
+
+      const {dispatch} = useContext(AuthContext);
 
   const handleChange = (e) => {
     setCredentials(prev => ( {...prev , [e.target.id]:e.target.value}))
 
 }
 
- const handleClick = (e) => {
+ const handleClick = async (e) => {
+
+   console.log('reg',credentials)
 
        e.preventDefault();
-       console.log(credentials)
+       try{
+        const res = await axios.post(`${BASE_URL}/auth/register`, credentials);
+        if(!res.status===200  || !res.status===201){
+          alert('falied to register');
+        }
+
+        dispatch({type:'REGISTER_SUCCESS'})
+
+        navigate('/login')        
+
+       }catch(err){
+          alert(err.message);
+       }
  }
 
   return (
@@ -42,7 +65,7 @@ const Register = () => {
               <h2>Register</h2>
               <Form onSubmit={handleClick}>
               <FormGroup>
-                  <input type="text" placeholder='Username' required id='userName' onChange={handleChange} />
+                  <input type="text" placeholder='Username' required id='username' onChange={handleChange} />
                 </FormGroup>
                 <FormGroup>
                   <input type="email" placeholder='Email' required id='email' onChange={handleChange} />

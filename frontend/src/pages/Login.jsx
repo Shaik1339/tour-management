@@ -1,9 +1,13 @@
-import React,{useState} from 'react'
+import React,{useState, useContext} from 'react'
 import '../styles/login.css'
 import { Container,Row,Col,Form,FormGroup,Button } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import loginImg from '../assets/images/login.png'
 import userIcon from '../assets/images/user.png'
+import { AuthContext } from '../context/AuthContext'
+import axios from 'axios'
+import { BASE_URL } from '../utils/config'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
 
@@ -13,15 +17,34 @@ const Login = () => {
   
       })
 
+      const navigate = useNavigate()
+      
+      const {dispatch} = useContext(AuthContext);
+
   const handleChange = (e) => {
     setCredentials(prev => ( {...prev , [e.target.id]:e.target.value}))
 
 }
 
- const handleClick = (e) => {
-
+ const handleClick = async  (e) => {
        e.preventDefault();
-       console.log(credentials)
+       dispatch({type:'LOGIN_START'})
+        try{
+         const res = await axios.post(`${BASE_URL}/auth/login`,credentials,{ withCredentials: true })
+         if(!res.status===200 || !res.status===201){
+          return alert('login falied')
+         }
+         console.log('result',res.data);
+         dispatch({type:'LOGIN_SUCCESS',payload:res?.data});
+         navigate('/')
+         
+          
+       }catch(err){ 
+
+        alert('login falied')
+        dispatch({type:'LOGIN_FAILED', payload:err.message})
+
+       }
  }
 
   return (
