@@ -164,7 +164,7 @@ const TourDetails = () => {
                         <div className="d-flex align-items-center justify-content-between">
                           <div>
                             <h5>{review?.username}</h5>
-                            <p>{new Date("02-25-2024").toLocaleDateString("en-US",options)}</p>
+                            <p>{new Date(review?.createdAt).toLocaleDateString("en-US",options)}</p>
                           </div>
                           <span className='d-flex align-items-center '>
                           {review?.rating}<i class="ri-star-fill"></i>

@@ -19,11 +19,25 @@ const Tour = () => {
   
   console.log('count',tourCount)
 
-  useEffect(()=>{
-    const pages= Math.ceil(tourCount?.data/4)
-    setPageCount(pages)
-    window.scrollTo(0,0);
-  },[tourCount,page,tours]);
+  // useEffect(()=>{
+  //   const pages= Math.ceil(tourCount?.data/4)
+  //   setPageCount(pages)
+  //   window.scrollTo(0,0);
+  // },[tourCount,page,tours]);
+
+  useEffect(() => {
+    const count = tourCount?.data;
+    if (typeof count === 'number' && count >= 0) {
+      const pages = Math.ceil(count / 4);
+      setPageCount(pages);
+    } else {
+      setPageCount(0); // fallback to prevent crash
+    }
+    window.scrollTo(0, 0);
+  }, [tourCount, page,tours]);
+
+
+
   return (
     <>
     <CommonSection  title={"All Tours"}/>
@@ -49,7 +63,7 @@ const Tour = () => {
             <Row>
           {
             tours?.data?.map((item,index)=> (
-              <Col lg='3' className='mb-4' key={item._id}>
+              <Col lg='3' md='6' sm='6' className='mb-4' key={item._id}>
 
                 <TourCard tour={item} />
               
@@ -58,18 +72,15 @@ const Tour = () => {
           }
 
           <Col lg='12'>
-            <div className="pagination d-flex align-items-center justify-content-center mt-4 gap-3">
-              {
-                [...Array(pageCount).keys()].map((number)=> (
-                  <span key={number} onClick={()=> setPage(number)} className={page===number? 'active__page':''}>
-                    {number+1 }
-
-                  </span>
-
-                ))
-              }
-
-            </div>
+          {pageCount > 0 && (
+  <div className="pagination d-flex align-items-center justify-content-center mt-4 gap-3">
+    {[...Array(pageCount).keys()].map((number) => (
+      <span key={number} onClick={() => setPage(number)} className={page === number ? 'active__page' : ''}>
+        {number + 1}
+      </span>
+    ))}
+  </div>
+)}
           
           </Col>
          

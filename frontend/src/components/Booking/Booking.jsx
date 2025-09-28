@@ -1,15 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useContext} from 'react'
 import './booking.css'
 import { FormGroup,Form,ListGroup,ListGroupItem,} from 'reactstrap'
 import { useNavigate } from 'react-router-dom'
+
+import {AuthContext} from '../../context/AuthContext'
+import axios from 'axios'
+import { BASE_URL } from '../../utils/config'
+
+
 const Booking = ({tour,avgRating}) => {
-    const {price,reviews} = tour;
+    const {price,reviews,title} = tour;
 
     const navigate=useNavigate();
 
-    const [credentials, setCredentials] = useState({
-        userId:'01',
-        userEmail:'musthashaik@gmail.com',
+    const {user }  = useContext(AuthContext)
+
+    const [booking, setBooking] = useState({
+        userId:user?.data?._id,
+        userEmail:user?.data?.email,
+        tourName:title,
         fullName:'',
         phone:'',
         guestSize:1,
@@ -18,17 +27,35 @@ const Booking = ({tour,avgRating}) => {
     })
 
     const handleChange = (e) => {
-        setCredentials(prev => ( {...prev , [e.target.id]:e.target.value}))
+        setBooking(prev => ( {...prev , [e.target.id]:e.target.value}))
 
     }
     const serviceFee = 10;
-    const totalAmount = Number(price) * Number(credentials.guestSize) + Number(serviceFee)
+    const totalAmount = Number(price) * Number(booking.guestSize) + Number(serviceFee)
 
     //send data to server
-    const handleClick = e => {
+    const handleClick = async (e) => {
         e.preventDefault();
-        console.log(credentials)
+
+        console.log('book',booking,user)
+
+        try{
+            if(!user || user===undefined || user===null){
+                return alert('please sign in')
+            }
+            const res = await axios.post(`${BASE_URL}/booking`,booking,{withCredentials:true});
+
+            if(!res.status===200 || !res.status===201){
+                return alert('falied to book tour')
+            }
+
+            console.log(booking)
         navigate('/thank-you')
+
+        }catch(err){
+            alert(err.message);
+        }
+        
     }
   return (
     <>

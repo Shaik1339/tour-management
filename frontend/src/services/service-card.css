@@ -31,3 +31,10 @@
     font-size: 0.9rem;
     color: var(--text-color);
 }
+
+/*  make it responsive */
+@media only screen and (max-width:992px){
+
+    
+
+}
